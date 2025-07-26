@@ -1,0 +1,1 @@
+ALTER TABLE "documents" ALTER COLUMN "analysis" SET NOT NULL;
