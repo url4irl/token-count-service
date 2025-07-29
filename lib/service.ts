@@ -5,6 +5,7 @@ import { get_encoding } from "tiktoken";
 import pdf from "pdf-parse";
 import mammoth from "mammoth";
 import xlsx from "xlsx";
+import { NotFoundError } from "./errors";
 
 export class TokenCountService {
   private encoding = get_encoding("cl100k_base");
@@ -96,7 +97,7 @@ export class TokenCountService {
       .limit(1);
 
     if (!document) {
-      throw new Error("Document not found");
+      throw new NotFoundError("Document not found");
     }
 
     return {

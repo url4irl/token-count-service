@@ -58,6 +58,18 @@ describe("Token Count Service E2E Tests", () => {
         error: '"file" is required',
       });
     });
+
+    it("should return 401 when userId is missing", async () => {
+      const response = await request(app)
+        .post("/api/documents/analyze")
+        .attach("file", Buffer.from("This is a test document."), "test.txt")
+        .expect(401);
+
+      expect(response.body).toEqual({
+        success: false,
+        error: "Unauthorized",
+      });
+    });
   });
 
   describe("GET /api/documents/status", () => {
@@ -87,18 +99,37 @@ describe("Token Count Service E2E Tests", () => {
 
       expect(response.body).toEqual({
         success: false,
-        error: '"documentId" and "userId" query parameters are required',
+        errors: [
+          {
+            code: "invalid_type",
+            expected: "string",
+            message: "Invalid input: expected string, received undefined",
+            path: ["documentId"],
+          },
+        ],
       });
     });
 
     it("should return 404 when document is not found", async () => {
       const response = await request(app)
         .get("/api/documents/status")
-        .query({ documentId: 999, userId: "testuser" })
+        .query({ documentId: "999", userId: "testuser" })
         .expect(404);
 
       expect(response.body.success).toBe(false);
       expect(response.body.error).toBe("Document not found");
+    });
+
+    it("should return 401 when userId is missing", async () => {
+      const response = await request(app)
+        .get("/api/documents/status")
+        .query({ documentId: "1" })
+        .expect(401);
+
+      expect(response.body).toEqual({
+        success: false,
+        error: "Unauthorized",
+      });
     });
   });
 });

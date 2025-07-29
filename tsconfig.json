@@ -5,9 +5,8 @@
     "resolveJsonModule": true,
     "declaration": true,
     "outDir": "./dist",
+    "types": ["form-data", "node", "jest", "express"],
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true
-  }
+  },
+  "files": ["./tests/jest-fetch-mock.d.ts"]
 }

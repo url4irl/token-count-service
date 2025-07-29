@@ -17,9 +17,11 @@ fi
 echo "Creating test database..."
 docker exec token_count_service_db psql -U postgres -c "CREATE DATABASE postgres_test;" 2>/dev/null || echo "Test database already exists"
 
+# Install drizzle-kit and drizzle-orm for the script environment
+pnpm install drizzle-kit drizzle-orm
+
 # Run migrations on test database
 echo "Running migrations on test database..."
-DATABASE_URL=postgres://postgres:postgres@localhost:5433/postgres_test npx drizzle-kit generate
 DATABASE_URL=postgres://postgres:postgres@localhost:5433/postgres_test npx drizzle-kit migrate
 
 echo "Test environment setup complete!"

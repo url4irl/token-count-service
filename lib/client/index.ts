@@ -1,5 +1,5 @@
 import { z } from "zod";
-import fetch, { RequestInit } from "node-fetch";
+import fetch from "cross-fetch";
 import FormData from "form-data";
 import fs from "fs";
 
@@ -10,7 +10,9 @@ const BASE_URL =
 
 // Zod Schemas
 export const AnalyzeDocumentSchema = z.object({
-  file: z.any(),
+  file: z.object({
+    path: z.string(),
+  }),
   userId: z.string().optional(),
 });
 
@@ -52,29 +54,12 @@ export class TokenCountClient {
   private async _request<T>(
     method: string,
     path: string,
-    data: any = null,
-    queryParams: Record<string, string> | null = null
+    options: RequestInit = {}
   ): Promise<T> {
     const url = new URL(`${this.baseUrl}${path}`);
-    if (queryParams) {
-      Object.keys(queryParams).forEach((key) =>
-        url.searchParams.append(key, queryParams[key])
-      );
-    }
 
-    const options: RequestInit = {
-      method,
-    };
-
-    if (data instanceof FormData) {
-      options.body = data;
-    } else if (data) {
-      options.headers = { "Content-Type": "application/json" };
-      options.body = JSON.stringify(data);
-    }
-
-    const response = await fetch(url.toString(), options);
-    const json = await response.json();
+    const response = await fetch(url.toString(), { method, ...options });
+    const json = (await response.json()) as { error?: string };
 
     if (!response.ok) {
       throw new Error(json.error || "Something went wrong");
@@ -86,29 +71,32 @@ export class TokenCountClient {
     input: AnalyzeDocumentInput
   ): Promise<AnalysisResponse> {
     const { file, userId } = AnalyzeDocumentSchema.parse(input);
-    const formData = new FormData();
-    formData.append("file", fs.createReadStream(file.path));
+    const form = new FormData();
+    form.append("file", fs.createReadStream(file.path));
+
+    const headers: Record<string, string> = {
+      ...form.getHeaders(),
+    };
+
     if (userId) {
-      formData.append("userId", userId);
+      headers["X-User-Id"] = userId;
     }
 
-    return this._request<AnalysisResponse>(
-      "POST",
-      "/api/documents/analyze",
-      formData
-    );
+    return this._request<AnalysisResponse>("POST", "/api/documents/analyze", {
+      body: form as any,
+      headers,
+    });
   }
 
   async getDocumentStatus(
     statusData: GetDocumentStatusInput
   ): Promise<StatusResponse> {
     const parsedData = GetDocumentStatusSchema.parse(statusData);
-    return this._request<StatusResponse>(
-      "GET",
-      "/api/documents/status",
-      null,
-      { documentId: String(parsedData.documentId), userId: parsedData.userId }
-    );
+    const url = new URL(`${this.baseUrl}/api/documents/status`);
+    url.searchParams.append("documentId", String(parsedData.documentId));
+    url.searchParams.append("userId", parsedData.userId);
+
+    return this._request<StatusResponse>("GET", url.pathname + url.search);
   }
 
   async healthCheck(): Promise<HealthCheckResponse> {
