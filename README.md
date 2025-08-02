@@ -2,6 +2,30 @@
 
 A free service that offers API endpoints for users to send documents and have them broken down into a token count analysis.
 
+## How It Works
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant U as User (e.g., your backend)
+    participant S as Token Count Service
+
+    C->>U: Provides document
+    U->>S: POST /api/documents/analyze (with document content)
+    activate S
+    Note right of S: Enqueues document for processing
+    S-->>U: 202 Accepted (with document ID)
+    deactivate S
+
+    loop Periodically check status
+        U->>S: GET /api/documents/status (with document ID)
+        activate S
+        S-->>U: 200 OK (with status and token count)
+        deactivate S
+    end
+```
+
+- [How It Works](#how-it-works)
 - [How to use this service](#how-to-use-this-service)
   - [Client SDK](#client-sdk)
     - [Features](#features)
