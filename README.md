@@ -1,6 +1,6 @@
 # token-count-service <!-- omit in toc -->
 
-A free service that offers API endpoints for users to send documents and have them broken down into a token count analysis.
+A service that offers API endpoints for users to send documents and have them broken down into a token count analysis.
 
 ## How It Works
 
