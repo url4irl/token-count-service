@@ -10,7 +10,7 @@ import multer from "multer";
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-export const createRoutes = () => {
+export const createRoutes = (): Router => {
   const router = Router();
   const tokenCountService = new TokenCountService();
 

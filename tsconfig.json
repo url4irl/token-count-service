@@ -2,11 +2,12 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "declaration": true,
     "outDir": "./dist",
-    "types": ["form-data", "node", "jest", "express"],
     "esModuleInterop": true,
+    "skipLibCheck": true
   },
-  "files": ["./tests/jest-fetch-mock.d.ts"]
+  "include": ["lib/**/*.ts"]
 }
