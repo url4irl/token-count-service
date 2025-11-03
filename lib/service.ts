@@ -2,6 +2,7 @@ import { eq, and, sql } from "drizzle-orm";
 import { db } from "./db/db";
 import { documentsTable, analysisLogsTable } from "./db/schema";
 import { get_encoding } from "tiktoken";
+import { encrypt } from "./security/encryption";
 import pdf from "pdf-parse";
 import mammoth from "mammoth";
 import xlsx from "xlsx";
@@ -61,7 +62,7 @@ export class TokenCountService {
       const [created] = await db
         .insert(documentsTable)
         .values({
-          content,
+          content: encrypt(content),
           userId,
           tokenCount,
           analysis,
