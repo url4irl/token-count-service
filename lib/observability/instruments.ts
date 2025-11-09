@@ -41,16 +41,16 @@ console.log("🔍 [DEBUG] Current working directory:", process.cwd());
 
 // Configure the OTLP exporters to point to your collector
 const traceExporter = new OTLPTraceExporter({
-  url: env.OTEL_EXPORTER_OTLP_ENDPOINT,
+  url: env.OTEL_EXPORTER_OTLP_ENDPOINT + "/v1/traces",
 });
 
 const logExporter = new OTLPLogExporter({
-  url: env.OTEL_EXPORTER_OTLP_ENDPOINT,
+  url: env.OTEL_EXPORTER_OTLP_ENDPOINT + "/v1/logs",
 });
 
 // Create the resource for both traces and logs
 const resource = resourceFromAttributes({
-  [ATTR_SERVICE_NAME]: pkg.name,
+  [ATTR_SERVICE_NAME]: pkg.name.replace("@url4irl/", ""),
   [ATTR_SERVICE_VERSION]: pkg.version,
   ["service.environment"]: env.NODE_ENV,
 });
