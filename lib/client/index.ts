@@ -2,9 +2,10 @@ import { z } from "zod";
 import fetch from "cross-fetch";
 import FormData from "form-data";
 import fs from "fs";
+import { env } from "../env/get-env";
 
 const BASE_URL =
-  process.env.NODE_ENV === "development"
+  env.NODE_ENV === "development"
     ? "http://localhost:4001"
     : "https://token-count.url4irl.com";
 

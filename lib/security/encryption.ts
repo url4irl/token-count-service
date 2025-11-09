@@ -1,8 +1,5 @@
 import crypto from "crypto";
-
-if (!process.env.ENCRYPTION_KEY) {
-  throw new Error("ENCRYPTION_KEY environment variable is not set.");
-}
+import { env } from "../env/get-env";
 
 const ALGORITHM: crypto.CipherGCMTypes = "aes-256-gcm";
 
@@ -10,7 +7,7 @@ export function encrypt(text: string) {
   const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(
     ALGORITHM,
-    Buffer.from(process.env.ENCRYPTION_KEY!, "hex"),
+    Buffer.from(env.ENCRYPTION_KEY, "hex"),
     iv
   );
 
@@ -31,7 +28,7 @@ export function decrypt(encryptedData: string) {
 
   const decipher = crypto.createDecipheriv(
     ALGORITHM,
-    Buffer.from(process.env.ENCRYPTION_KEY!, "hex"),
+    Buffer.from(env.ENCRYPTION_KEY, "hex"),
     iv
   );
   decipher.setAuthTag(authTag);

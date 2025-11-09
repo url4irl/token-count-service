@@ -2,6 +2,7 @@ import { Router } from "express";
 import { TokenCountService } from "../service";
 import { validate } from "../middleware/validation";
 import { authenticate } from "../middleware/auth";
+import { strictRateLimiter } from "../security/rate-limiter";
 import {
   AnalyzeDocumentBodySchema,
   GetDocumentStatusQuerySchema,
@@ -59,6 +60,7 @@ export const createRoutes = (): Router => {
   router.post(
     "/api/documents/analyze",
     upload.single("file"),
+    strictRateLimiter, // Apply strict rate limiting for resource-intensive operations
     authenticate,
     validate(AnalyzeDocumentBodySchema, "body"),
     async (req, res, next) => {
